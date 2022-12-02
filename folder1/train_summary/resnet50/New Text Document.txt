@@ -1,0 +1,5 @@
+trained for 150 epochs
+started with lr=0.01
+used binary cross entropy as loss, metrics i used iou score
+
+200/200 [==============================] - 34s 170ms/step - loss: 0.1367 - iou_score: 0.7828 - val_loss: 0.1392 - val_iou_score: 0.7714

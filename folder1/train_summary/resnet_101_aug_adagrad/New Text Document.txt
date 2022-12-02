@@ -1,0 +1,3 @@
+used Adagrad
+did not use reduce lr on plateau
+200/200 [==============================] - 47s 234ms/step - loss: 0.2449 - iou_score: 0.7012 - val_loss: 0.2534 - val_iou_score: 0.6923
