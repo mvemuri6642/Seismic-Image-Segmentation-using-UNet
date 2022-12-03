@@ -1,0 +1,306 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[top= 1in,bottom= 1in,left= 1.5in,right= 1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{mathptmx}
+\usepackage{ragged2e} 
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{hyperref}
+\geometry{
+ a4paper,
+ left=20mm,
+ top=20mm,
+ }
+\begin{document}
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=1.2]{LOGO.png}}
+\label{fig}
+\end{figure}
+
+\centerline{\textbf{\Huge Illinois Institute of Technology}\vspace{7mm}}
+
+\centerline{\textbf{\LARGE CS-584 Machine Learning}\vspace{40mm}}
+\centerline{\textbf{\Huge Identification of Salt Regions in Seismic Images }}
+\centerline{\textbf{\Huge using Deep Learning }\vspace{30mm}}
+\centerline{\textbf{\large Naveen Raju Sreerama Raju Govinda Raju(A20516868)}}
+\centerline{\textbf{\large nsreeramarajugovinda@hawk.iit.edu}\vspace{5mm}}
+\centerline{\textbf{\large Sai Manohar Vemuri (A20514848)}}
+\centerline{\textbf{\large svemuri6@hawk.iit.edu}\vspace{5mm}}
+\centerline{\textbf{\large Sesha Shai Datta Kolli(A20516330)}}
+\centerline{\textbf{\large skolli2@hawk.iit.edu}\vspace{10mm}}
+\centerline{\textbf{\large Dr. Yan Yan}\vspace{10mm}}
+\newpage
+
+
+\section*{\centering\textbf{TABLE OF CONTENTS}}
+\hspace*{19mm}\textbf{\normalsize S.no}\hspace*{13mm}\textbf{\normalsize TITLE}\hspace*{77mm}\textbf{\normalsize PAGE}\\
+\hspace*{19mm}\textbf{\normalsize 1}\hspace*{18mm}\textbf{\normalsize Introduction}\hspace*{70mm}\textbf{\normalsize 3-4}\newline
+\hspace*{19mm}\textbf{\normalsize 2}\hspace*{18mm}\textbf{\normalsize Problem description}\hspace*{60mm}\textbf{\normalsize 5}\newline
+\hspace*{22mm}\textbf{\normalsize 2.1}\hspace*{25mm}\textbf{\normalsize U-Net }\hspace*{68mm}\textbf{\normalsize 5}\newline
+\hspace*{22mm}\textbf{\normalsize 2.2}\hspace*{25mm}\textbf{\normalsize VGG }\hspace*{69mm}\textbf{\normalsize 5}\newline
+\hspace*{22mm}\textbf{\normalsize 2.3}\hspace*{25mm}\textbf{\normalsize Resnet  }\hspace*{67mm}\textbf{\normalsize 6}\newline
+\hspace*{22mm}\textbf{\normalsize 2.4}\hspace*{25mm}\textbf{\normalsize Training procedure}\hspace*{49mm}\textbf{\normalsize 6}\newline
+\hspace*{22mm}\textbf{\normalsize 2.5}\hspace*{25mm}\textbf{\normalsize Evaluation metrics}\hspace*{50mm}\textbf{\normalsize 7}\newline
+\hspace*{22mm}\textbf{\normalsize 2.6}\hspace*{25mm}\textbf{\normalsize Graphs}\hspace*{67mm}\textbf{\normalsize 8}\newline
+\hspace*{22mm}\textbf{\normalsize 2.7}\hspace*{25mm}\textbf{\normalsize Loss Function}\hspace*{56mm}\textbf{\normalsize 8-9}\newline
+\hspace*{19mm}\textbf{\normalsize 3}\hspace*{18mm}\textbf{\normalsize Results }\hspace*{78mm}\textbf{\normalsize 10}\newline
+\hspace*{19mm}\textbf{\normalsize 4}\hspace*{18mm}\textbf{\normalsize Conclusions and future scope }\hspace*{45mm}\textbf{\normalsize 10-11}\\
+\hspace*{19mm}\textbf{\normalsize 5}\hspace*{18mm}\textbf{\normalsize Contributions }\hspace*{69mm}\textbf{\normalsize 11}\\
+\hspace*{19mm}\textbf{\normalsize 6}\hspace*{18mm}\textbf{\normalsize Project Repository }\hspace*{62mm}\textbf{\normalsize 11}\\
+\hspace*{19mm}\textbf{\normalsize 7}\hspace*{18mm}\textbf{\normalsize References }\hspace*{74mm}\textbf{\normalsize 11}\\
+
+
+\section*{\centering\textbf{LIST OF FIGURES}}
+\hspace*{19mm}\textbf{\normalsize F.no}\hspace*{17mm}\textbf{\normalsize TITLE}\hspace*{77mm}\textbf{\normalsize PAGE}\\
+
+\hspace*{15mm}\textbf{\normalsize 1.1}\hspace*{18mm}\textbf{\normalsize Gas and oil regions in earths subsurface }\hspace*{30mm}\textbf{\normalsize 3}\\
+\hspace*{20mm}\textbf{\normalsize 1.2}\hspace*{18mm}\textbf{\normalsize seismic image creation process }\hspace*{44mm}\textbf{\normalsize 3}\\
+\hspace*{20mm}\textbf{\normalsize 1.3}\hspace*{18mm}\textbf{\normalsize sample training data }\hspace*{59mm}\textbf{\normalsize 4}\\
+\hspace*{20mm}\textbf{\normalsize 1.4}\hspace*{18mm}\textbf{\normalsize sample training data }\hspace*{59mm}\textbf{\normalsize 4}\\
+\hspace*{20mm}\textbf{\normalsize 2.1}\hspace*{18mm}\textbf{\normalsize UNet }\hspace*{82mm}\textbf{\normalsize 5}\\
+\hspace*{20mm}\textbf{\normalsize 2.2}\hspace*{18mm}\textbf{\normalsize VGG }\hspace*{82mm}\textbf{\normalsize 6}\\
+\hspace*{20mm}\textbf{\normalsize 2.3}\hspace*{18mm}\textbf{\normalsize Resnet }\hspace*{80mm}\textbf{\normalsize 6}\\
+\hspace*{20mm}\textbf{\normalsize 2.5}\hspace*{18mm}\textbf{\normalsize Evalution Metrics }\hspace*{63mm}\textbf{\normalsize 7}\\
+\hspace*{20mm}\textbf{\normalsize 2.6}\hspace*{18mm}\textbf{\normalsize Training Graphs }\hspace*{65mm}\textbf{\normalsize 8}\\
+\hspace*{20mm}\textbf{\normalsize 3.1}\hspace*{18mm}\textbf{\normalsize Predictions }\hspace*{73mm}\textbf{\normalsize 10}\\
+\newpage
+
+\section*{1.\hspace{4mm} Introduction}
+
+Many companies Extracting oil and gas reserves, several places of the Earth that are rich in oil and natural gas Finding subsurface salt deposits using Seismic waves Knowing precise locations of large 
+salt deposits is extremely important to companies involved in oil and gas exploration.
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.9]{img1.png}}
+\centerline{\textbf{Fig.1.1.} Gas and oil regions in earths subsurface}
+\label{fig}
+\end{figure}
+Large amounts of salt are present beneath the surface of many oceans and seas around the world. Seismic images have historically been used to locate salt deposits underground.
+Misinterpretation of the salt boundaries typically results in higher expenses.
+Seismic image interpretation by humans can be difficult at times and is not always accurate.
+Salt density is usually about 2.14 g/cm3, which is less than most nearby rocks. Salt seismic velocity of around 4.5 km/s is usually bigger than the surrounding rocks
+
+Technology called seismic imagery is used to describe the subsurface geology.
+It is based on the emission of sound waves into the ocean, where they are reflected off of underwater object structures and detected on the surface by hydrophone receivers.Seismic imaging enables the 3D visualization of underground structures 
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{img2.png}}
+\centerline{\textbf{Fig.1.2.} seismic image creation process}
+\label{fig}
+\end{figure}
+\newpage
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{img3.png}}
+\centerline{\textbf{Fig.1.3.} sample training data}
+\label{fig}
+\end{figure}
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{img4.png}}
+\centerline{\textbf{Fig.1.4.} sample training data}
+\label{fig}
+\end{figure}
+In the two images above, the seismic image is on the left of the image stack, the salt region's binary mask is in the middle, and the  right most image has binary mask's contours are drawn on it.
+\newpage
+
+\section*{2.\hspace{4mm} Problem description}
+Large amounts of salt are found in the subsurface of oceans and seas in several parts of the world. Seismic images have traditionally been used to identify the subsurface with salt, which is technically difficult because the seismic velocity of salt is very fast compared to other substances in the ocean. This is because salt is an amorphous rock with little structure.
+
+internal organization Whereas regular rocks have some internal structure, seismic imaging technology can distinguish between different rocks but not salt. As a result, we employ Deep Learning algorithms to segment the salt regions in seismic images.
+\subsection*{2.1.\hspace{4mm} U-Net}
+The UNet architecture, which consists of a contraction path and an extraction path made up of CNN blocks, is typically used for semantic segmentation. Skip connections between the corresponding CNN blocks between the contraction and extraction path go along with this.
+As it descends into the lower layers of the encoding section during the encoding process in the contraction path, spatial information is reduced in a specific pattern while also picking up various significant features at various stages. Features from the contraction path are expanded at various stages during the expansive path by adding features from the corresponding paths of the contraction path
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{Unet.png}}
+\centerline{\textbf{Fig.2.1.} Unet}
+\label{fig}
+\end{figure}
+\justify
+\subsection*{2.2.\hspace{4mm} VGG 16}
+VGG, a team of Oxford researchers who created this architecture, goes by the name of Visual Geometry Group.
+We used VGG 16 is used as a backbone for UNet in encoder as well as decoder.
+The network receives a dimensioned image as input (224, 224, 3). 
+The same padding and 64 channels with a 3*3 filter size are present in the first two layers. 
+Then, two layers have convolution layers of 128 filter size and filter size after a max pool layer of stride (2, 2) (3, 3). 
+The next layer is a max-pooling stride (2, 2) layer that is identical to the layer before it. 
+There are then 256 filters spread across 2 convolution layers with filter sizes of 3 and 3. 
+There are then two sets of three convolution layers, followed by a max pool layer. 
+Each filter has the same padding and has 512 filters of size (3, 3) size with the same padding. 
+The stack of two convolution layers then receives this image. The stack of two convolution layers then receives this image. 
+The filters we use in these convolution and max-pooling layers are 3*3 in size. It also uses 1*1 pixels in some of the layers to adjust the number of input channels. 
+To prevent the spatial feature of the image, 1-pixel padding is applied after each convolution layer.
+We obtained a (7, 7, 512) feature map after adding a convolution and max-pooling layer to the stack.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{vgg.jpeg}}
+\centerline{\textbf{Fig.2.2.} Vgg}
+\label{fig}
+\end{figure}
+\justify
+\newpage
+\subsection*{2.3.\hspace{4mm} ResNeT}
+In general, CNN architectures with numerous layers are required to capture fine-grained details. The Vanishing/Exploding gradient is a well-known deep learning issue that arises when the number of layers is increased. This results in the gradient becoming zero or being too large. Therefore, the training and test error rate also increases as the number of layers is increased. A new architecture called Residual Network was introduced by Microsoft Research researchers in 2015 with the proposal of ResNet.
+The Residual Blocks concept was introduced by this architecture to address the issue of the vanishing/exploding gradient.
+We apply a technique known as skip connections in this network.
+The skip connection bypasses some layers in between to link layer activations to subsequent layers. This creates a leftover block.
+These residual blocks are stacked to create resnets.
+The strategy behind this network is to let the network fit the residual mapping rather than have layers learn the underlying mapping.
+The benefit of including this kind of skip connection is that regularization will skip any layer that degrades architecture performance.
+As a result, training a very deep neural network is possible without encountering issues with vanishing or exploding gradients.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{Resnet.png}}
+\centerline{\textbf{Fig.2.3.} ResNet}
+\label{fig}
+\end{figure}
+\justify
+
+\subsection*{2.4.\hspace{4mm} Training procedure }
+The training dataset comprises of 1151 seismic images and its co responding ground truth binary masks.
+The testing dataset comprises of 302 seismic images and its co responding ground truth binary masks.
+We used an initial learning rate of 0.01 with a reducing learning rate on a plateau with a patience rate of 4 and a factor of 0.1, based on validation loss. We experimented with Adam and Ada Grad optimizers. Various augmentation techniques used are: vertical flip, horizontal flip, width-shift, height-shift, shear, zoom, rotation, contrast-limited adaptive histogram equalization, image sharpening, and gamma correction (Power Law Transform). We rained for 100–200 epochs on average with a batch size of 6. Metrics used were the IOU score to evaluate how well the model is trained, and loss functions used were binary cross entropy and a combination of focal loss and dice loss.\newline
+
+\justify
+\newpage
+\subsection*{2.5.\hspace{4mm} Evaluation metrics }
+\justify
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{Metrix.png}}
+\centerline{\textbf{Fig.2.5.} Evalution Metrics}
+\label{fig}
+\end{figure}
+For the following architectures as backbone to Unet that is VGG16, RESNET 50, RESNET101. 
+Training parameters used were:\newline
+a)Augmentation -  vertical flip, horizontal flip, width-shift, height-shift, shear, zoom, rotation\newline
+b)Metrics - IOU score\newline
+c)loss function -  Binary cross entropy\newline
+d)Epochs - 200\newline
+e)Batch size - 6\newline
+f)Input dimension - 224*224*1 \newline
+g)Optimiser - Adam\newline
+h)initial learning rate of 0.01 with a reducing learning rate on plateau with a patience rate of 4 and a factor of 0.1\newline
+\newline
+For the following architectures as backbone to Unet that is RESNET 50(Robust augmentation), RESNET101(Robust augmentation) and Custom architecture.\newline
+For RESNET variants, pre-trained weights from the above mentioned approach were used.
+Training parameters used were:\newline
+a)Augmentation -  vertical flip, horizontal flip, width-shift, height-shift, shear, zoom, rotation, contrast-limited adaptive histogram equalization, image sharpening, and gamma correction (Power Law Transform)\newline
+b)Metrics - IOU score\newline
+c)loss function -  Focal loss+Dice loss\newline
+d)Epochs - 200\newline
+e)Batch size - 6\newline
+f)Input dimension - 224*224*1 , for custom model input dimension was 128*128*1\newline
+g)Optimiser - Adam\newline
+h)initial learning rate of 0.01 with a reducing learning rate on plateau with a patience rate of 4 and a factor of 0.1\newline
+Only for RESNET 101 Ada grad optimiser was also used.\newline
+As we can see from the table, the best performing model was Custom model and second best performing model was RESNET 101.
+
+\newpage
+\subsection*{2.6.\hspace{4mm} Graphs }
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.25]{MergedImages.png}}
+\centerline{\textbf{Fig.2.6.} Training Graphs}
+\label{fig}
+\end{figure}
+Blue lines in the aforementioned graphs represent training metrics, while orange lines represent validation metrics.
+\justify
+
+\subsection*{2.7.\hspace{4mm} Loss Function }
+The justification for why Balance cross entropy manages class imbalance better than Binary cross entropy is given mathematically below. Then it shows how focal loss overcomes the drawbacks of balanced cross entropy by giving more weight to classes that are difficult to classify and less weight to classes that are easy to classify. Furthermore, how focal loss deals with the issue of class inequality .\newline
+1. Binary Cross Entropy:\newline
+CE = -log(p)*y - log(1-p)(1-y)\newline
+where,p is the predicted probability, y is the ground truth \newline
+When y=1,\newline
+   p=0.9     CE= 0.045\newline
+   P=0.1     CE=1 \newline
+\newline
+2. Balanced Binary Cross Entropy:\newline
+Positive samples - 100\newline
+Negative samples - 80\newline
+Class weight for positive sample = 0.8\newline
+Class weight for negative sample = 1\newline
+CE = -0.8*log(p)*y - 1*log(1-p)(1-y)\newline
+When y=1,
+p = 0.9     CE = 0.0366
+p = 0.1     CE = 0.8
+\newpage
+\begin{figure}[htbp]
+\includegraphics[scale=0.3]{Focal Loss.png}
+\label{fig}
+\end{figure}
+
+\begin{figure}[htbp]
+\includegraphics[scale=0.4]{focal1.png}
+\label{fig}
+\end{figure}
+.\newline
+Case 1:\newline
+For correctly classifying samples we can see that focal loss has 360 times less loss than Binary cross entropy and 292.8 times less loss than Balanced binary cross entropy.\newline
+Case2:\newline
+For wrongly classified samples we can see that focal loss is just 4.938 times less loss than Binary cross entropy and 3.9506 times less loss than Balanced binary cross entropy.\newline
+Thus we can see how strongly focal loss places emphasis on wrongly classified samples.
+\justify
+\begin{figure}[htbp]
+\includegraphics[scale=0.4]{Dloss.png}
+\label{fig}
+\end{figure}
+The Dice loss is a popular loss in the computer vision community for determining how similar the ground truth and a prediction made using intersection over union logic.
+
+\newpage
+\section*{3.\hspace{4mm} Results}
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=0.5]{img5.png}}
+\centerline{\textbf{Fig.3.1.} Predictions}
+\label{fig}
+\end{figure}
+The first image in each of the image stacks above is the input image, the second image is the binary mask prediction contours drawn on the input image, the third image is the ground truth binary mask, and the final image is the model prediction.
+
+\section*{4.\hspace{4mm} Conclusion and future scope}
+{\textbf{\small Conclusion:}}\newline
+After several experiments of using different backbone architecture for UNet we were able to get best results on our custom built backbone architecture for UNet that surpassed the evaluation metrics of big architectures like ResNet 50, ResNet 101 and VGG16.
+Compared to ResNet 50 our architecture had 7.86 times less total parameters,compared to ResNet 101 our architecture had 12.45 times less total parameters and compared to VGG 16 our architecture had 5.73 times less total parameters. 
+The results were as follows: IOU: 84.168 %, F1 score: 88.8%, Accuracy: 95.1%, Precision: 90.1%, Recall:90.3%.
+\newline
+\newline
+{\textbf{\small Future Scope:}}\newline
+1. More research can be done in the future to improve the performance of the proposed hybrid design and
+overcome its current drawbacks. The following are the primary research directions that can be tested. Despite\newline
+being practical in real-time applications due to today’s computing capabilities, the number of parameters of
+our model can be reduced by reducing model complexity by taking into account the design principles of some other state-of-the-art models with a lower number of parameters.\newline
+2. Better performance on the IoU metric can be a topic of future research by taking into account some
+modern design approaches of CNNs as well as model design choices that give a high IoU.\newline
+3. The data set can be sampled into various groups based on the visibility of the foreground features, and several custom efficient models can be trained so we can  ensemble those models  to produce better results.\newpage.\newline
+\section*{5.\hspace{4mm} Contributions}
+ Naveen Raju Sreerama Raju Govinda Raju\newline
+- Image processing augmentation exploration\newline
+- UNet architecture with different backbones coding \newline
+- Training and testing\newline\newline
+ Sai Manohar Vemuri\newline
+- Unet Architecture research \newline
+- Custom architecture design and exploration\newline
+- Training and testing\newline\newline
+ Sesha Shai Datta Kolli\newline
+- Data set exploration and domain knowledge research\newline
+- Data set cleaning\newline
+- Analysis of predictions, U Net architecture exploration\newline
+\section*{6.\hspace{4mm} Project Repository}
+\url{https://github.com/mvemuri6642/Identification_of_Salt_Regions_in_Seismic_Images_using_DeepLearning}
+\section*{7.\hspace{4mm} Reference}
+[1] Daniel Civitarese1, Daniela Szwarcman1, Emilio Vital Brazil1, Bianca Zadrozny,"Semantic Segmentation of\newline\hspace*{4mm} Seismic Images"\newline
+[2] Olaf Ronneberger, Philipp Fischer, Thomas Brox, "U-Net: Convolutional Networks for Biomedical
+Image \newline\hspace*{5mm}Segmentation"\newline
+[3] Karen Simonyan, Andrew Zisserman, "VERY DEEP CONVOLUTIONAL NETWORKS FOR LARGE-SCALE \hspace*{5mm}IMAGE RECOGNITION"\newline
+[4] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun, "Deep Residual Learning for Image Recognition"\newline
+[5] Christopher M. Bishop,"Pattern Recognition and Machine Learning"\newline
+[6] Quentin Jodeleta,b, Xin Liub, Tsuyoshi Murataa, "Balanced softmax cross-entropy for incremental learning with\newline\hspace*{4mm} and without memory"\newline
+[7] Tsung-Yi Lin, Priya Goyal, Ross Girshic,k Kaiming He, Piotr Dollar,"Focal Loss for Dense Object Detection"\newline
+[8] Carole H. Sudre, Wenqi Li, Tom Vercauteren, Sebastien Ourselin,M. Jorge Cardoso,"Generalised Dice overlap as \newline\hspace*{5mm}a deep learning lossfunction for highly unbalanced segmentations"\newline
+[9] https://www.kaggle.com/c/tgs-salt-identification-challenge\newline
+[10] Reference Repository: \url{https://github.com/zhixuhao/unet}\newline
+[11] Reference Repository: \url{https://github.com/qubvel/segmentation_models} \newline
+[12]  \url{https://www.geeksforgeeks.org/vgg-16-cnn-model/}\newline
+[13] \url{https://www.geeksforgeeks.org/residual-networks-resnet-deep-learning/}\newline
+
+\end{document}
